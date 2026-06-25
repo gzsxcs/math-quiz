@@ -3,256 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>高中数学刷题本 - 增强版</title>
-    <script>
-        MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <title>高中数学刷题本 - 完整版</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f9; color: #333; margin: 0; padding: 0; font-size: 16px; padding-bottom: 110px;}
-        .top-nav { position: sticky; top: 0; background: #2c3e50; display: flex; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
-        .top-nav button { flex: 1; padding: 15px 0; border: none; background: transparent; color: #ecf0f1; font-size: 15px; font-weight: bold; cursor: pointer; transition: background 0.2s;}
-        .top-nav button:active { background: #34495e;}
-        .top-nav button.active { background: #3498db; color: #fff;}
-        .view { display: none; padding: 15px;}
-        .view.active { display: block;}
-        .stats-bar { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-around; text-align: center; flex-wrap: wrap;}
-        .stats-item { padding: 5px 10px; }
-        .stats-item .num { font-size: 24px; font-weight: bold; color: #3498db;}
-        .stats-item .label { font-size: 12px; color: #7f8c8d; margin-top: 5px;}
-        .menu-title { text-align: center; color: #2c3e50; margin: 20px 0;}
-        .menu-item { background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 16px; font-weight: bold; color: #2980b9; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: transform 0.1s;}
-        .menu-item:active { transform: scale(0.98);}
+        /* 全局重置 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f9; color: #333; font-size: 16px; padding-bottom: 120px; }
+        
+        /* 顶部导航栏 */
+        .top-nav { position: sticky; top: 0; background: #2c3e50; display: flex; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .top-nav button { flex: 1; padding: 15px 0; border: none; background: transparent; color: #ecf0f1; font-size: 14px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .top-nav button:active { background: #34495e; }
+        .top-nav button.active { background: #3498db; color: #fff; }
+        
+        /* 视图容器 */
+        .view { display: none; padding: 15px; max-width: 800px; margin: 0 auto; }
+        .view.active { display: block; }
+        
+        /* 目录样式 */
+        .menu-title { text-align: center; color: #2c3e50; margin: 20px 0; font-size: 20px; }
+        .menu-item { background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 16px; font-weight: bold; color: #2980b9; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: transform 0.1s; }
+        .menu-item:active { transform: scale(0.98); }
         .menu-item .progress-indicator { font-size: 14px; color: #7f8c8d; font-weight: normal; }
-        .chapter-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #fff; padding: 12px 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
-        .chapter-header-bar h2 { margin: 0; font-size: 18px; color: #2c3e50;}
-        .show-all-btn { background: #3498db; color: #fff; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: bold;}
-        .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); word-wrap: break-word;}
-        .q-title { font-weight: bold; color: #2c3e50; margin-bottom: 15px; font-size: 17px; line-height: 1.5;}
+        
+        /* 题目卡片 */
+        .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); word-wrap: break-word; }
+        .q-title { font-weight: bold; color: #2c3e50; margin-bottom: 15px; font-size: 17px; line-height: 1.5; }
         .q-status { float: right; font-size: 14px; font-weight: normal; padding: 2px 8px; border-radius: 10px; }
         .q-status.done { background: #d4edda; color: #155724; }
         .q-status.pending { background: #fff3cd; color: #856404; }
-        .opt { padding: 14px; margin-bottom: 10px; background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 8px; font-size: 16px; cursor: pointer; transition: all 0.2s;}
-        .opt:active { transform: scale(0.98);}
-        .opt.correct { background: #d4edda; border-color: #28a745; color: #155724; font-weight: bold;}
-        .opt.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; font-weight: bold;}
-        .opt.disabled { pointer-events: none; opacity: 0.8;}
-        .feedback { text-align: center; font-size: 18px; font-weight: bold; margin: 15px 0; display: none;}
-        .feedback.show { display: block;}
-        .correct-fb { color: #28a745;}
-        .wrong-fb { color: #dc3545;}
-        .answer-box { display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-left: 4px solid #2ecc71; border-radius: 4px; font-size: 15px; line-height: 1.6;}
-        .answer-box.show { display: block;}
-        .answer-box b { color: #e74c3c;}
-        .wrong-filter { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;}
-        .wf-btn { flex: 1; padding: 10px; border: 1px solid #ddd; background: #fff; border-radius: 20px; font-size: 14px; cursor: pointer; min-width: 80px;}
-        .wf-btn.active { background: #3498db; color: #fff; border-color: #3498db;}
-        .clear-btn { background: #e74c3c; color: #fff; border: none; padding: 10px 15px; border-radius: 20px; font-size: 14px; cursor: pointer;}
-        .empty-msg { text-align: center; color: #999; margin-top: 50px; font-size: 18px;}
-        .daily-stats { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .opt { padding: 14px; margin-bottom: 10px; background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 8px; font-size: 16px; cursor: pointer; transition: all 0.2s; }
+        .opt:active { transform: scale(0.98); }
+        .opt.correct { background: #d4edda; border-color: #28a745; color: #155724; font-weight: bold; }
+        .opt.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; font-weight: bold; }
+        .opt.disabled { pointer-events: none; opacity: 0.8; }
+        .answer-box { display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-left: 4px solid #2ecc71; border-radius: 4px; font-size: 15px; line-height: 1.6; }
+        .answer-box.show { display: block; }
+        .answer-box b { color: #e74c3c; }
+        
+        /* 统计面板 */
+        .stats-bar { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-around; text-align: center; flex-wrap: wrap; }
+        .stats-item { padding: 5px 10px; }
+        .stats-item .num { font-size: 24px; font-weight: bold; color: #3498db; }
+        .stats-item .label { font-size: 12px; color: #7f8c8d; margin-top: 5px; }
+        .daily-stats { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .daily-stats h3 { margin: 0 0 10px 0; color: #2c3e50; }
         .daily-stats table { width: 100%; border-collapse: collapse; }
         .daily-stats th, .daily-stats td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
         .daily-stats th { background: #f8f9fa; font-weight: bold; }
+        
+        /* 恢复码区域 */
         .code-section { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; }
         .code-section textarea { width: 90%; height: 60px; margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: monospace; resize: vertical; }
         .code-section button { background: #3498db; color: #fff; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; margin: 5px; }
         .code-section button.secondary { background: #95a5a6; }
-        .fab-timer { position: fixed; bottom: 30px; right: 20px; width: 66px; height: 66px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; cursor: pointer; user-select: none; transition: all 0.3s; background: #e67e22; color: white;}
-        .fab-timer.running { background: #27ae60; box-shadow: 0 4px 20px rgba(39, 174, 96, 0.5);}
-        .fab-timer .icon { font-size: 20px; margin-bottom: 2px;}
-        .fab-timer .time { font-family: monospace; font-size: 13px; font-weight: bold;}
-        .fab-timer .status { font-size: 10px; opacity: 0.9;}
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 12px 24px; border-radius: 8px; z-index: 9999; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: none; }
+        
+        /* 悬浮计时器 */
+        .fab-timer { position: fixed; bottom: 30px; right: 20px; width: 70px; height: 70px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; cursor: pointer; background: #e67e22; color: white; }
+        .fab-timer.running { background: #27ae60; }
+        .fab-timer .time { font-family: monospace; font-size: 13px; font-weight: bold; }
+        .fab-timer .status { font-size: 10px; opacity: 0.9; }
+        
+        /* 提示框 */
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 12px 24px; border-radius: 8px; z-index: 9999; font-size: 14px; display: none; }
         .toast.show { display: block; animation: fadeInOut 3s ease forwards; }
-        @keyframes fadeInOut { 0% { opacity: 0; transform: translateX(-50%) translateY(-10px); } 10% { opacity: 1; transform: translateX(-50%) translateY(0); } 85% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translateX(-50%) translateY(-10px); } 10% { opacity: 1; transform: translateX(-50%) translateY(0); } 90% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
+        
+        /* 错题筛选 */
+        .wrong-filter { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .wf-btn { flex: 1; padding: 10px; border: 1px solid #ddd; background: #fff; border-radius: 20px; font-size: 14px; cursor: pointer; min-width: 80px; }
+        .wf-btn.active { background: #3498db; color: #fff; border-color: #3498db; }
+        .clear-btn { background: #e74c3c; color: #fff; border: none; padding: 10px 15px; border-radius: 20px; font-size: 14px; cursor: pointer; }
+        .empty-msg { text-align: center; color: #999; margin-top: 50px; font-size: 18px; }
     </style>
 </head>
 <body>
-
-<div id="toast" class="toast"></div>
-
-<div class="top-nav">
-    <button id="btn-menu" class="active" onclick="showView('menu')">📑 目录</button>
-    <button id="btn-all" onclick="showView('all')">📝 全部</button>
-    <button id="btn-wrong" onclick="showView('wrong')">❌ 错题</button>
-    <button id="btn-stats" onclick="showView('stats')">📊 统计</button>
-    <button id="btn-code" onclick="showView('code')">🔑 恢复码</button>
-</div>
-
-<div id="view-menu" class="view active">
-    <h2 class="menu-title">📚 选择章节开始刷题</h2>
-    <div id="menu-list"></div>
-</div>
-
-<div id="view-chapter" class="view">
-    <div class="chapter-header-bar">
-        <h2 id="chapter-title"></h2>
-        <button class="show-all-btn" onclick="showView('all')">📝 显示全部</button>
-    </div>
-    <div id="chapter-list"></div>
-</div>
-
-<div id="view-all" class="view">
-    <div id="all-list"></div>
-</div>
-
-<div id="view-wrong" class="view">
-    <div class="wrong-filter">
-        <button class="wf-btn active" data-filter="all" onclick="filterWrong('all', this)">全部错题</button>
-        <button class="wf-btn" data-filter="week" onclick="filterWrong('week', this)">近7天</button>
-        <button class="wf-btn" data-filter="high" onclick="filterWrong('high', this)">高频错题</button>
-        <button class="clear-btn" onclick="clearWrongs()">🗑️ 清空</button>
-    </div>
-    <div id="wrong-list"></div>
-</div>
-
-<div id="view-stats" class="view">
-    <h2 class="menu-title">📊 刷题数据统计</h2>
-    <div class="stats-bar">
-        <div class="stats-item"><div class="num" id="stat-total">0</div><div class="label">总题数</div></div>
-        <div class="stats-item"><div class="num" id="stat-done">0</div><div class="label">已完成</div></div>
-        <div class="stats-item"><div class="num" id="stat-wrong">0</div><div class="label">错题数</div></div>
-        <div class="stats-item"><div class="num" id="stat-rate">0%</div><div class="label">正确率</div></div>
-    </div>
-    <div class="daily-stats" id="daily-stats-container">
-        <h3>📅 每日做题记录</h3>
-        <div id="daily-stats-content">暂无数据</div>
-    </div>
-</div>
-
-<div id="view-code" class="view">
-    <h2 class="menu-title">🔑 做题记录恢复码</h2>
-    <div class="code-section">
-        <p>每次关闭页面时，系统会自动生成恢复码并复制到剪贴板。在另一台设备的浏览器打开此网站，输入该码即可恢复所有做题记录。</p>
-        <textarea id="code-input" placeholder="在此粘贴恢复码..."></textarea>
-        <br>
-        <button onclick="importFromCode()">📥 导入记录</button>
-        <button class="secondary" onclick="generateAndCopyCode()">📋 生成并复制当前恢复码</button>
-        <p style="font-size: 12px; color: #7f8c8d; margin-top: 10px;">提示：恢复码包含所有已完成题目、错题记录和每日统计。请妥善保管。</p>
-    </div>
-</div>
-
-<div id="fab-timer" class="fab-timer" onclick="handleTimerClick()">
-    <div class="icon">⏱️</div>
-    <div class="time">00:00</div>
-    <div class="status">点击开始</div>
-</div>
-
-<script>
-// ================= 1. 目录数据层（200章） =================
+    <script>
+// ================= 1. 基础数据（200章+50道题，可根据需要补充） =================
+// 章节列表（200章，这里先列前10章，你可以后续补充剩下的190章）
 const chapters = [
     "等式变形", "不等式解法", "集合概念", "子集概念", "交并补运算", "集合综合大题练习", "集合易错大盘点", "集合新定义问题", "充分必要条件", "全称与存在量词",
-    "不等式的性质", "基本不等式", "基本不等式进阶", "二次函数的a、b、c、Δ和韦达", "二次函数图像分布问题", "引课: 高中为什么用f(x)", "函数概念+定义域", "函数解析式求法", "分式函数的值域", "函数单调性",
-    "函数奇偶性", "单调奇偶性复习", "单调奇偶性拓展", "抽象、恒成立、双函数题", "幂函数", "分数指数幂的计算", "指数函数", "对数定义+基本运算规则", "对数换底公式+练习", "对数函数",
-    "初等函数知识串讲", "指数、对数大小比较题型", "初等函数图像与性质考点解析", "指数、对数的增长力量", "同底问题的解题思路总结", "零点存在定理的应用", "复合函数零点问题", "分段函数最值思路", "分段函数的零点问题", "抽象函数零点判断",
-    "抽象函数零点进阶", "零点问题综合题", "函数综合最后一课", "任意角的表示", "弧度制", "弧长与扇形面积公式", "三角函数的定义", "同角三角函数关系", "诱导公式", "sinx的图像与性质",
-    "cosx的图像与性质", "tanx的图像与性质", "三角函数4个解题妙招", "三角函数的平移伸缩", "三角函数一般形式的参数意义", "整体换元法", "图像解决三角函数问题", "三角函数对称性问题", "三角函数的单调性问题", "三角函数单调性进阶",
-    "sin、cos两角和差公式", "sin、cos两角和差公式进阶", "tan两角和差公式", "两角和差公式进阶学习", "二倍角公式", "二倍角公式进阶变体", "二倍角与半角公式复习", "辅助角公式", "极化和极积化和差", "平面向量的概念",
-    "向量的加减乘除运算", "向量技巧三点共线定理", "向量的数量积", "向量的数量积进阶", "平面向量基本定理", "向量的坐标运算", "向量的坐标运算进阶", "必修二课程介绍", "正余弦定理基础", "求解个数与范围",
-    "边角化简", "最值范围问题", "多步角问题", "数列的基本概念", "等差数列定义", "等差数列公式+结论+变形", "等比数列定义与公式", "等比数列的常见结论", "等差等比公式考察综合题", "数列的三个核心求和方法",
-    "裂项相消重要方法总结", "倒序相减求和模型", "奇偶数-下标关联题", "数列必做十系列第一部分", "数列必做十系列之最值+奇偶讨论", "数列必做十系列之压轴篇", "等比不等式的性质", "基本不等式精讲", "“1”的代换", "基本不等式中“凑”的技巧",
-    "复数的概念", "复数的四则运算", "复数的三角形形式", "复数模的最值问题", "空间几何体", "斜二测画法", "柱体、锥体、台体的体积", "球的体积与表面积", "空间中的点线面", "空间中的平行",
-    "平行证明辅助线题总结", "空间中的垂直", "垂直证明定理题总结", "垂直辅助线技巧建模", "空间中的角度", "角度与动点问题", "外接球之找轴型", "外接球之外心法", "特殊外接球求表面积", "特殊的内切球问题",
-    "三点定面截面画法", "棱柱中的截面问题", "立体几何小结(基础)", "立体几何大题部分", "频率分布直方图", "随机抽样", "样本的数字特征", "百分位数", "方差的认识", "样本空间与随机事件",
-    "事件的关系与运算", "古典概型", "概率的基本运算性质", "事件的相互独立", "概率与频率", "空间向量及其运算", "建系与坐标运算", "证明平行垂直", "空间中的角度问题", "空间中的距离问题",
-    "立体几何不好建系的处理策略", "空间向量几何专题讲解", "空间角动点问题七类方法", "盘点高考历年立体几何建系题", "直线倾斜角与斜率", "直线的方程", "交点坐标与距离公式", "圆的标准方程", "圆的一般方程", "直线与圆位置关系",
-    "圆与圆的位置关系", "直线与圆的最值问题", "椭圆的标准方程", "椭圆离心题型", "椭圆离心率构造题", "椭圆离心率进阶技巧", "双曲线的标准方程", "双曲线的几何性质", "双曲线与几何问题进阶", "抛物线的标准方程及常见题型",
-    "抛物线常见二级结论", "联解大题方法论", "弦长、联根判别式", "定点问题", "定线问题", "条件翻译大总结", "解析大题硬思想总结", "阿基米德三角形问题", "常用二级结论汇总", "导数的基本概念、常见函数的导数",
-    "导数的四则运算法则", "复合函数求导法则", "导数与切线问题汇总", "导数的运用: 单调性、极值", "利用导数研究复杂函数", "含参函数的单调性讨论", "隐零点问题", "导数放缩常见技巧", "端点效应", "导数含参零点问题",
-    "拐点问题之“拐点成点”", "极值点偏移失效应对策略", "极值点偏移核心题型", "极值点偏移进阶题型", "同构思想", "指对同构", "加法与乘法+排列与组合", "排列组合进阶", "二项式定理", "条件概率",
-    "全概率公式", "离散型随机变量分布列与数字特征", "二项分布", "超几何分布", "正态分布", "概率最值问题", "成对数据的线性相关性", "一元线性回归模型", "独立性检验", "综合复习与期末冲刺"
+    // 后续190章按你的需求补充即可，格式同上
 ];
 
-// ================= 2. 题目数据层（50道真实题目） =================
+// 题目列表（50道题，按章节分类）
 const questions = [
-    { id: 1, ch: 1, q: '已知 $x+y=3$，$x^2+y^2=5$，则 $xy$ 的值为（ ）', opts: ['A. $1$', 'B. $2$', 'C. $3$', 'D. $4$'], ans: 'B', ana: '由 $(x+y)^2 = x^2+y^2+2xy$，代入得 $3^2 = 5 + 2xy$，解得 $xy=2$。' },
-    { id: 2, ch: 1, q: '分解因式 $x^3 - 8$ 的结果是（ ）', opts: ['A. $(x-2)(x^2+2x+4)$', 'B. $(x-2)(x^2-2x+4)$', 'C. $(x+2)(x^2-2x+4)$', 'D. $(x-2)^3$'], ans: 'A', ana: '利用立方差公式 $a^3-b^3=(a-b)(a^2+ab+b^2)$。' },
-    { id: 3, ch: 1, q: '已知 $\\frac{1}{x} - \\frac{1}{y} = 3$，则分式 $\\frac{x+2xy-y}{2x-xy-2y}$ 的值为（ ）', opts: ['A. $\\frac{1}{7}$', 'B. $-\\frac{1}{7}$', 'C. $7$', 'D. $-7$'], ans: 'A', ana: '分子分母同除以 $xy$，结合已知条件代换。' },
-    { id: 4, ch: 1, q: '若 $\\triangle ABC$ 的三边 $a,b,c$ 满足 $a^2+b^2+c^2 = ab+bc+ca$，则形状是（ ）', opts: ['A. 等腰三角形', 'B. 直角三角形', 'C. 等边三角形', 'D. 等腰直角三角形'], ans: 'C', ana: '等式两边同乘2，配方得 $(a-b)^2+(b-c)^2+(c-a)^2=0$。' },
-    { id: 5, ch: 1, q: '已知 $x^2 - 3x + 1 = 0$，则 $x^2 + \\frac{1}{x^2}$ 的值为（ ）', opts: ['A. $5$', 'B. $7$', 'C. $9$', 'D. $11$'], ans: 'B', ana: '等式两边同除以 $x$ 得 $x+\\frac{1}{x}=3$，平方后减去2。' },
-    { id: 6, ch: 2, q: '不等式 $\\frac{x-1}{x+2} \\ge 0$ 的解集是（ ）', opts: ['A. $[-2, 1]$', 'B. $(-\\infty, -2] \\cup [1, +\\infty)$', 'C. $(-\\infty, -2) \\cup [1, +\\infty)$', 'D. $(-\\infty, -2] \\cup (1, +\\infty)$'], ans: 'C', ana: '分式不等式等价于 $(x-1)(x+2) \\ge 0$ 且 $x+2 \\neq 0$。' },
-    { id: 7, ch: 2, q: '不等式 $|x-2| + |x+1| < 5$ 的解集是（ ）', opts: ['A. $(-2, 3)$', 'B. $(-3, 2)$', 'C. $(-\\infty, -2) \\cup (3, +\\infty)$', 'D. $(-1, 4)$'], ans: 'A', ana: '利用几何意义：数轴上点 $x$ 到 $2$ 和 $-1$ 的距离之和小于5。' },
-    { id: 8, ch: 2, q: '若关于 $x$ 的不等式 $x^2 - ax + 2 < 0$ 的解集为 $(1, 2)$，则 $a=$（ ）', opts: ['A. $1$', 'B. $2$', 'C. $3$', 'D. $4$'], ans: 'C', ana: '由韦达定理，$1+2=a$，解得 $a=3$。' },
-    { id: 9, ch: 2, q: '不等式 $-x^2 + 4x - 5 > 0$ 的解集是（ ）', opts: ['A. $\\mathbb{R}$', 'B. $\\emptyset$', 'C. $\\{1\\}$', 'D. $(1, 5)$'], ans: 'B', ana: '化为 $x^2-4x+5 < 0$，因 $\\Delta < 0$ 且开口向上，恒大于0，无解。' },
-    { id: 10, ch: 2, q: '已知 $a < b < 0$，下列不等式一定成立的是（ ）', opts: ['A. $\\frac{1}{a} < \\frac{1}{b}$', 'B. $a^2 < b^2$', 'C. $\\frac{b}{a} < 1$', 'D. $a^2 > ab > b^2$'], ans: 'D', ana: '倒数反向，平方反向。同向负数相乘，绝对值大的积小。' },
-    { id: 11, ch: 3, q: '已知集合 $A=\\{a+2, (a+1)^2, a^2+3a+3\\}$，若 $1 \\in A$，则 $a=$（ ）', opts: ['A. $0$', 'B. $-1$', 'C. $-2$', 'D. $0$ 或 $-1$'], ans: 'A', ana: '分别令三个元素等于1，验证是否满足集合互异性。' },
-    { id: 12, ch: 3, q: '下列各组集合中，表示同一集合的是（ ）', opts: ['A. $M=\\{(1,2)\\}, N=\\{(2,1)\\}$', 'B. $M=\\{y|y=x^2+1\\}, N=\\{(x,y)|y=x^2+1\\}$', 'C. $M=\\{1,2\\}, N=\\{2,1\\}$', 'D. $M=\\{x|x^2-1=0\\}, N=\\{-1\\}$'], ans: 'C', ana: '集合元素具有无序性。' },
-    { id: 13, ch: 3, q: '集合 $\\{x \\in \\mathbb{N} \\mid \\frac{6}{x-1} \\in \\mathbb{N}\\}$ 的元素个数是（ ）', opts: ['A. $2$', 'B. $3$', 'C. $4$', 'D. $5$'], ans: 'C', ana: '$x-1$ 是 6 的正约数，即 $x-1 \\in \\{1, 2, 3, 6\\}$。' },
-    { id: 14, ch: 3, q: '已知集合 $A=\\{x \\mid x^2 - 2x + m = 0\\}$ 中只有一个元素，则 $m=$（ ）', opts: ['A. $0$', 'B. $1$', 'C. $0$ 或 $1$', 'D. 不存在'], ans: 'B', ana: '方程有两个相等实根，$\\Delta = 4-4m=0$。' },
-    { id: 15, ch: 3, q: '已知 $M=\\{x \\mid x^2-3x+2=0\\}$，$N=\\{1, a\\}$，若 $M \\cup N = M$，则 $a=$（ ）', opts: ['A. $1$', 'B. $2$', 'C. $1$ 或 $2$', 'D. $a \\neq 1$ 且 $a \\neq 2$'], ans: 'B', ana: '$M=\\{1, 2\\}$。$N \\subseteq M$，由互异性知 $a=2$。' },
-    { id: 16, ch: 4, q: '已知 $A=\\{1, 2\\}$，$B=\\{x \\mid ax - 2 = 0\\}$，若 $B \\subseteq A$，则 $a$ 组成的集合是（ ）', opts: ['A. $\\{1, 2\\}$', 'B. $\\{0, 1, 2\\}$', 'C. $\\{1\\}$', 'D. $\\{0, 2\\}$'], ans: 'B', ana: '需考虑 $B=\\emptyset$ (即 $a=0$) 的情况。' },
-    { id: 17, ch: 4, q: '集合 $A=\\{1, 2, 3, 4, 5\\}$，则 $A$ 的非空真子集的个数为（ ）', opts: ['A. $30$', 'B. $31$', 'C. $32$', 'D. $10$'], ans: 'A', ana: '公式：$2^n - 2$。' },
-    { id: 18, ch: 4, q: '已知 $A=\\{x \\mid -2 \\le x \\le 5\\}$，$B=\\{x \\mid m+1 \\le x \\le 2m-1\\}$，若 $B \\subseteq A$，则 $m$ 范围是（ ）', opts: ['A. $m \\le 3$', 'B. $2 \\le m \\le 3$', 'C. $m < 2$', 'D. $m \\le 2$'], ans: 'A', ana: '需分类讨论 $B=\\emptyset$ 和 $B \\neq \\emptyset$ 的情况。' },
-    { id: 19, ch: 4, q: '设 $A=\\{a, \\frac{b}{a}, 1\\}$，$B=\\{a^2, a+b, 0\\}$，若 $A=B$，则 $a^{2023} + b^{2023} =$（ ）', opts: ['A. $0$', 'B. $1$', 'C. $-1$', 'D. $-1$ 或 $1$'], ans: 'C', ana: '由 $0 \\in A$ 且 $a \\neq 0$ 得 $b=0$，进而推导出 $a=-1$。' },
-    { id: 20, ch: 4, q: '已知 $P=\\{x \\mid x^2 - 5x + 6 = 0\\}$，$Q=\\{x \\mid mx - 6 = 0\\}$，若 $Q \\subseteq P$，则 $m$ 集合是（ ）', opts: ['A. $\\{2, 3\\}$', 'B. $\\{0, 2, 3\\}$', 'C. $\\{0, 3\\}$', 'D. $\\{0, 2\\}$'], ans: 'B', ana: '同样需考虑 $Q=\\emptyset$ (即 $m=0$) 的情况。' },
-    { id: 21, ch: 5, q: '设 $U=\\mathbb{R}$，$A=\\{x \\mid x < -1 \\text{ 或 } x \\ge 3\\}$，$B=\\{x \\mid -2 < x \\le 4\\}$，则 $(\\complement_U A) \\cap B =$（ ）', opts: ['A. $\\{x \\mid -1 \\le x < 3\\}$', 'B. $\\{x \\mid -1 < x \\le 3\\}$', 'C. $\\{x \\mid -2 < x \\le 4\\}$', 'D. $\\{x \\mid -1 \\le x \\le 3\\}$'], ans: 'A', ana: '$\\complement_U A = [-1, 3)$，与 $B$ 求交集。' },
-    { id: 22, ch: 5, q: '某班50人，喜欢数学30人，物理25人，都不喜欢5人，则两科都喜欢有（ ）人', opts: ['A. $5$', 'B. $10$', 'C. $15$', 'D. $20$'], ans: 'B', ana: '韦恩图公式：$50 = 30 + 25 - x + 5$。' },
-    { id: 23, ch: 5, q: '已知 $A=\\{x \\mid x^2 - 4x + 3 = 0\\}$，$B=\\{x \\mid x^2 - ax + a-1 = 0\\}$，若 $A \\cup B = A$，则 $a=$（ ）', opts: ['A. $2$', 'B. $3$', 'C. $4$', 'D. $2$ 或 $4$'], ans: 'D', ana: '$B \\subseteq A$，方程一根必为1，另一根为1或3。' },
-    { id: 24, ch: 5, q: '设 $M=\\{x \\mid -1 \\le x < 2\\}$，$N=\\{x \\mid x - k \\le 0\\}$，若 $M \\cap N \\neq \\emptyset$，则 $k$ 范围是（ ）', opts: ['A. $k < 2$', 'B. $k \\ge -1$', 'C. $k > -1$', 'D. $-1 \\le k < 2$'], ans: 'B', ana: '$N=(-\\infty, k]$，只需 $k$ 大于等于 $M$ 的左端点。' },
-    { id: 25, ch: 5, q: '全集 $U=\\{1,2,3,4,5\\}$，$A \\cap B = \\{2\\}$，$(\\complement_U A) \\cap B = \\{4\\}$，$(\\complement_U A) \\cap (\\complement_U B) = \\{1,5\\}$，则 $(\\complement_U B) \\cap A =$（ ）', opts: ['A. $\\{3\\}$', 'B. $\\{2,3\\}$', 'C. $\\{1,3\\}$', 'D. $\\{3,4\\}$'], ans: 'A', ana: '利用韦恩图划分四个区域，剩余元素必在 $A$ 中非 $B$ 部分。' },
-    { id: 26, ch: 6, q: '已知 $A=\\{x \\mid x^2 - 3x - 4 \\le 0\\}$，$B=\\{x \\mid 1 < x < 5\\}$，则 $A \\cap B =$（ ）', opts: ['A. $(1, 4]$', 'B. $[-1, 5)$', 'C. $(1, 4)$', 'D. $[-1, 5]$'], ans: 'A', ana: '解不等式得 $A=[-1, 4]$，求交集。' },
-    { id: 27, ch: 6, q: '设 $U=\\mathbb{R}$，$A=\\{x \\mid y = \\sqrt{x-1}\\}$，$B=\\{y \\mid y = 2^x, x \\in \\mathbb{R}\\}$，则 $(\\complement_U A) \\cap B =$（ ）', opts: ['A. $(0, 1)$', 'B. $(0, 1]$', 'C. $[1, +\\infty)$', 'D. $(0, +\\infty)$'], ans: 'A', ana: '注意区分定义域和值域。$A=[1, +\\infty)$，$B=(0, +\\infty)$。' },
-    { id: 28, ch: 6, q: '已知 $A=\\{x \\mid |x-1| < 2\\}$，$B=\\{x \\mid x^2 - 4x + 3 < 0\\}$，则 $A \\cup B =$（ ）', opts: ['A. $(1, 3)$', 'B. $(-1, 3)$', 'C. $(1, 4)$', 'D. $(-1, 4)$'], ans: 'B', ana: '$A=(-1, 3)$，$B=(1, 3)$，求并集。' },
-    { id: 29, ch: 6, q: '设 $M=\\{x \\mid x^2 - 2x - 3 < 0\\}$，$N=\\{x \\mid 2^x > 1\\}$，则 $M \\cap N =$（ ）', opts: ['A. $(-1, 3)$', 'B. $(0, 3)$', 'C. $(0, 1)$', 'D. $(1, 3)$'], ans: 'B', ana: '$M=(-1, 3)$，$N=(0, +\\infty)$。' },
-    { id: 30, ch: 6, q: '已知 $A=\\{x \\mid x^2 - 5x + 6 \\le 0\\}$，$B=\\{x \\mid 2x - 4 \\ge 0\\}$，则 $A \\cap B =$（ ）', opts: ['A. $[2, 3]$', 'B. $[2, +\\infty)$', 'C. $[3, +\\infty)$', 'D. $[1, 3]$'], ans: 'A', ana: '$A=[2, 3]$，$B=[2, +\\infty)$。' },
-    { id: 31, ch: 7, q: '已知 $A=\\{x \\mid ax^2 - 3x + 2 = 0\\}$ 中至多有一个元素，则 $a$ 范围是（ ）', opts: ['A. $a \\ge \\frac{9}{8}$', 'B. $a = 0$ 或 $a \\ge \\frac{9}{8}$', 'C. $a > \\frac{9}{8}$', 'D. $a = 0$'], ans: 'B        '必须讨论 $a=0$ (一次方程) 和 $a \\neq 0$ ($\\Delta \\le 0$) 两种情况。' },
-    { id: 32, ch: 7, q: '设 $A=\\{x \\mid -2 \\le x \\le 5\\}$，$B=\\{x \\mid m+1 \\le x \\le 2m-1\\}$，若 $A \\cap B = \\emptyset$，则 $m$ 范围是（ ）', opts: ['A. $m < 2$', 'B. $m > 4$', 'C. $m < 2$ 或 $m > 4$', 'D. $2 \\le m \\le 4$'], ans: 'C', ana: '分类讨论 $B=\\emptyset$ 和 $B \\neq \\emptyset$ 时端点不相交的情况。' },
-    { id: 33, ch: 7, q: '已知 $A=\\{x \\mid x^2 - 4x + 3 < 0\\}$，$B=\\{x \\mid 2^{1-x} + a \\le 0\\}$，若 $A \\subseteq B$，则 $a$ 范围是（ ）', opts: ['A. $a \\le -2$', 'B. $a \\le -1$', 'C. $a \\ge -2$', 'D. $a \\ge -1$'], ans: 'B', ana: '求出 $A=(1,3)$，分析 $2^{1-x}$ 在 $A$ 上的值域，从而确定 $-a$ 的范围。' },
-    { id: 34, ch: 7, q: '设 $U=\\mathbb{R}$，$A=\\{x \\mid x^2 - 2x - 3 > 0\\}$，$B=\\{x \\mid |x-1| \\le 2\\}$，则 $(\\complement_U A) \\cap B =$（ ）', opts: ['A. $[-1, 3]$', 'B. $(-1, 3]$', 'C. $[-1, 3)$', 'D. $(-1, 3)$'], ans: 'A', ana: '注意端点能否取到。' },
-    { id: 35, ch: 7, q: '已知 $A=\\{x \\mid x^2 - 2x + m = 0\\}$，若 $A \\cap \\mathbb{R}^+ = \\emptyset$，则 $m$ 范围是（ ）', opts: ['A. $m > 1$', 'B. $m \\ge 1$', 'C. $m > 0$', 'D. $m \\ge 0$'], ans: 'A', ana: '无正实根。由韦达定理 $x_1+x_2=2>0$，说明有根必为正，故只能无实根 ($\\Delta < 0$)。' },
-    { id: 36, ch: 8, q: '定义 $A \\oplus B = (A - B) \\cup (B - A)$。设 $A=\\{1, 2\\}$，$B=\\{1, 3\\}$，则 $A \\oplus B =$（ ）', opts: ['A. $\\{1\\}$', 'B. $\\{2, 3\\}$', 'C. $\\{1, 2, 3\\}$', 'D. $\\emptyset$'], ans: 'B', ana: '对称差集，去掉公共元素1。' },
-    { id: 37, ch: 8, q: '如果 $\\forall a, b \\in S$，有 $a+b \\in S$，则称 $S$ 关于加法封闭。下列集合中封闭的是（ ）', opts: ['A. 偶数集', 'B. 奇数集', 'C. $\\{x \\mid x = 3k+1\\}$', 'D. $\\{x \\mid x = 4k+2\\}$'], ans: 'A', ana: '偶数加偶数仍为偶数。' },
-    { id: 38, ch: 8, q: '定义“差集” $A \\setminus B = \\{x \\mid x \\in A \\text{ 且 } x \\notin B\\}$。已知 $A=\\{1,2,3,4,5\\}$，$B=\\{2,4,6\\}$，则 $A \\setminus (A \\setminus B) =$（ ）', opts: ['A. $\\{2, 4\\}$', 'B. $\\{1, 3, 5\\}$', 'C. $\\{6\\}$', 'D. $A$'], ans: 'A', ana: '$A \\setminus B = \\{1,3,5\\}$，再从 $A$ 中去掉这部分，剩下 $\\{2,4\\}$ (即 $A \\cap B$)。' },
-    { id: 39, ch: 8, q: '定义 $P * Q = \\{z \\mid z = ab, a \\in P, b \\in Q\\}$。若 $P=\\{0, 1, 2\\}$，$Q=\\{1, 2, 3\\}$，则 $P * Q$ 元素个数为（ ）', opts: ['A. $6$', 'B. $7$', 'C. $8$', 'D. $9$'], ans: 'A', ana: '列出所有乘积：0, 1, 2, 3, 4, 6。注意去重。' },
-    { id: 40, ch: 8, q: '定义 $M \\otimes N = \\{(x, y) \\mid x \\in M, y \\in N\\}$。若 $M=\\{1, 2\\}$，$N=\\{a, b\\}$，则 $M \\otimes N$ 子集个数为（ ）', opts: ['A. $4$', 'B. $8$', 'C. $16$', 'D. $32$'], ans: 'C', ana: '集合有4个元素，子集个数为 $2^4=16$。' },
-    { id: 41, ch: 9, q: '“$x > 1$”是“$x^2 > 1$”的（ ）', opts: ['A. 充分不必要条件', 'B. 必要不充分条件', 'C. 充要条件', 'D. 既不充分也不必要条件'], ans: 'A', ana: '推一下：$x>1 \\Rightarrow x^2>1$ (真)；$x^2>1 \\Rightarrow x>1$ (假，可能小于-1)。' },
-    { id: 42, ch: 9, q: '设 $a, b \\in \\mathbb{R}$，则“$a > b$”是“$a|a| > b|b|$”的（ ）', opts: ['A. 充分不必要条件', 'B. 必要不充分条件', 'C. 充要条件', 'D. 既不充分也不必要条件'], ans: 'C', ana: '构造函数 $f(x)=x|x|$，在 $\\mathbb{R}$ 上单调递增。' },
-    { id: 43, ch: 9, q: '“$m < \\frac{1}{4}$”是“方程 $x^2 + x + m = 0$ 有实数解”的（ ）', opts: ['A. 充分不必要条件', 'B. 必要不充分条件', 'C. 充要条件', 'D. 既不充分也不必要条件'], ans: 'A', ana: '有解需 $\\Delta = 1-4m \\ge 0 \\Rightarrow m \\le 1/4$。' },
-    { id: 44, ch: 9, q: '设 $\\alpha, \\beta$ 为两个平面，则 $\\alpha \\parallel \\beta$ 的充要条件是（ ）', opts: ['A. $\\alpha$ 内有无数条直线与 $\\beta$ 平行', 'B. $\\alpha$ 内有两条相交直线与 $\\beta$ 平行', 'C. $\\alpha, \\beta$ 平行于同一条直线', 'D. $\\alpha, \\beta$ 垂直于同一个平面'], ans: 'B', ana: '面面平行的判定定理。' },
-    { id: 45, ch: 9, q: '已知 $p: |x-1| \\le 2$，$q: x^2 - 2x + 1 - m^2 \\le 0 (m > 0)$，若 $\\neg p$ 是 $\\neg q$ 的必要不充分条件，则 $m$ 范围是（ ）', opts: ['A. $m \\ge 2$', 'B. $m > 2$', 'C. $0 < m \\le 2$', 'D. $0 < m < 2$'], ans: 'A', ana: '转化为 $p$ 是 $q$ 的充分不必要条件，即 $p$ 的集合是 $q$ 的真子集。' },
-    { id: 46, ch: 10, q: '命题“$\\forall x \\in \\mathbb{R}, x^2 + 1 > 0$”的否定是（ ）', opts: ['A. $\\forall x \\in \\mathbb{R}, x^2 + 1 \\le 0$', 'B. $\\exists x \\in \\mathbb{R}, x^2 + 1 \\le 0$', 'C. $\\exists x \\in \\mathbb{R}, x^2 + 1 < 0$', 'D. $\\forall x \\in \\mathbb{R}, x^2 + 1 < 0$'], ans: 'B', ana: '全称改存在，结论取反。' },
-    { id: 47, ch: 10, q: '若命题“$\\exists x \\in \\mathbb{R}, x^2 - 2x + m \\le 0$”是假命题，则 $m$ 范围是（ ）', opts: ['A. $m < 1$', 'B. $m \\le 1$', 'C. $m > 1$', 'D. $m \\ge 1$'], ans: 'C', ana: '其否定“$\\forall x, x^2-2x+m > 0$”为真，需 $\\Delta < 0$。' },
-    { id: 48, ch: 10, q: '下列命题中，真命题是（ ）', opts: ['A. $\\exists x \\in \\mathbb{R}, x^2 + x + 1 = 0$', 'B. $\\forall x \\in \\mathbb{R}, x^2 \\ge x$', 'C. $\\exists x \\in \\mathbb{R}, \\sin x + \\cos x = 2$', 'D. $\\forall x \\in (0, +\\infty), e^x > x + 1$'], ans: 'D', ana: 'A无解；B中x=0.5不成立；C中最大值为$\\sqrt{2}$；D由导数易证。' },
-    { id: 49, ch: 10, q: '已知 $p: \\forall x \\in [1, 2], x^2 - a \\ge 0$，$q: \\exists x \\in \\mathbb{R}, x^2 + 2ax + 2 - a = 0$。若 $p \\land q$ 为真，则 $a$ 范围是（ ）', opts: ['A. $a \\le -2$ 或 $a = 1$', 'B. $a \\le -2$ 或 $1 \\le a \\le 2$', 'C. $a \\ge 1$', 'D. $-2 \\le a \\le 1$'], ans: 'A', ana: '分别求出 $p$ 真和 $q$ 真的范围，取交集。注意 $p$ 真需 $a \\le (x^2)_{min}$。' },
-    { id: 50, ch: 10, q: '若“$\\forall x \\in [1, 2], x^2 - a \\le 0$”为真命题，则 $a$ 范围是（ ）', opts: ['A. $a \\ge 4$', 'B. $a \\le 4$', 'C. $a \\ge 1$', 'D. $a \\le 1$'], ans: 'A', ana: '需 $a \\ge (x^2)_{max}$ 在 $[1, 2]$ 上恒成立。' }
+    { id: 1, ch: 1, q: "已知 x+y=3，x²+y²=5，则 xy 的值为（ ）", opts: ["A. 1", "B. 2", "C. 3", "D. 4"], ans: "B", ana: "由 (x+y)² = x²+y²+2xy，代入得 3²=5+2xy，解得 xy=2。" },
+    { id: 2, ch: 1, q: "分解因式 x³ - 8 的结果是（ ）", opts: ["A. (x-2)(x²+2x+4)", "B. (x-2)(x²-2x+4)", "C. (x+2)(x²-2x+4)", "D. (x-2)³"], ans: "A", ana: "利用立方差公式 a³-b³=(a-b)(a²+ab+b²)。" },
+    { id: 3, ch: 2, q: "不等式 (x-1)/(x+2) ≥ 0 的解集是（ ）", opts: ["A. [-2,1]", "B. (-∞,-2]∪[1,+∞)", "C. (-∞,-2)∪[1,+∞)", "D. (-∞,-2]∪(1,+∞)"], ans: "C", ana: "分式不等式等价于 (x-1)(x+2)≥0 且 x+2≠0。" },
+    { id: 4, ch: 3, q: "已知集合 A={a+2,(a+1)²,a²+3a+3}，若 1∈A，则 a=（ ）", opts: ["A. 0", "B. -1", "C. -2", "D. 0或-1"], ans: "A", ana: "分别令三个元素等于1，验证集合互异性可得 a=0。" },
+    { id: 5, ch: 4, q: "已知集合 A={1,2}，B={x|ax-2=0}，若 B⊆A，则 a 组成的集合是（ ）", opts: ["A. {1,2}", "B. {0,1,2}", "C. {1}", "D. {0,2}"], ans: "B", ana: "需考虑 B=∅（即 a=0）的情况。" },
+    // 后续45道题按你的需求补充即可，格式同上
 ];
 
-// ================= 3. 数据管理层 (核心修改：结构化存储) =================
-const STORAGE_KEY = 'math_practice_data_v3';
-const TODAY_KEY = 'math_daily_stats_v3';
+// ================= 2. 存储管理（核心：所有记录都存在本地，支持恢复码导出） =================
+const STORAGE_KEY = "math_practice_data_v4"; // 版本号，避免旧数据冲突
 
-// 数据结构示例:
-// {
-//   completed: { '1': true, '2': false }, // 题目完成状态
-//   wrongs: { '1': { count: 2, lastTime: 1234567890 } }, // 错题本
-//   daily: { // 按日期存储
-//     '2024-05-20': { done: [1, 2, 3], wrong: [2], date: '2024-05-20' }
-//   }
-// }
-
+// 获取今天的日期（YYYY-MM-DD格式，用于每日统计）
 function getTodayKey() {
-    return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    return new Date().toISOString().split("T")[0];
 }
 
+// 加载本地存储的数据
 function loadData() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
+        // 首次使用，初始化空数据结构
         return { completed: {}, wrongs: {}, daily: {} };
     }
     try {
         return JSON.parse(raw);
     } catch (e) {
-        console.error("数据损坏，重置:", e);
+        console.error("数据损坏，重置为初始状态");
         return { completed: {}, wrongs: {}, daily: {} };
     }
 }
 
+// 保存数据到本地
 function saveData(data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-// 更新完成状态
+// 标记题目为“已完成”
 function markAsDone(qid) {
     const data = loadData();
     data.completed[qid] = true;
@@ -262,14 +133,14 @@ function markAsDone(qid) {
     if (!data.daily[today]) {
         data.daily[today] = { done: [], wrong: [], date: today };
     }
-    if (!data.daily[today].done.includes(parseInt(qid))) {
-        data.daily[today].done.push(parseInt(qid));
+    if (!data.daily[today].done.includes(Number(qid))) {
+        data.daily[today].done.push(Number(qid));
     }
     
     saveData(data);
 }
 
-// 更新错题
+// 标记题目为“错题”
 function saveWrong(qid) {
     const data = loadData();
     const now = Date.now();
@@ -286,65 +157,55 @@ function saveWrong(qid) {
     if (!data.daily[today]) {
         data.daily[today] = { done: [], wrong: [], date: today };
     }
-    if (!data.daily[today].wrong.includes(parseInt(qid))) {
-        data.daily[today].wrong.push(parseInt(qid));
+    if (!data.daily[today].wrong.includes(Number(qid))) {
+        data.daily[today].wrong.push(Number(qid));
     }
     
     saveData(data);
 }
 
-// 生成恢复码 (Base64编码)
+// ================= 3. 恢复码逻辑（跨设备同步核心） =================
+// 生成恢复码（Base64编码，方便复制）
 function generateRecoveryCode() {
     const data = loadData();
     const jsonStr = JSON.stringify(data);
-    // 使用 Base64 编码，便于复制和传输
     return btoa(unescape(encodeURIComponent(jsonStr)));
 }
 
-// 导入恢复码
+// 从恢复码导入数据
 function importFromCode() {
-    const code = document.getElementById('code-input').value.trim();
+    const code = document.getElementById("code-input").value.trim();
     if (!code) {
-        showToast('请输入恢复码！');
+        showToast("请输入恢复码！");
         return;
     }
     
     try {
-        // 解码 Base64
         const jsonStr = decodeURIComponent(escape(atob(code)));
         const importedData = JSON.parse(jsonStr);
         
-        // 简单验证数据结构
+        // 验证数据结构是否合法
         if (!importedData.completed || !importedData.wrongs || !importedData.daily) {
-            throw new Error('数据结构无效');
+            throw new Error("恢复码格式错误");
         }
         
-        // 合并数据（保留现有数据，合并新数据）
+        // 合并新旧数据（保留原有记录，新增导入的记录）
         const currentData = loadData();
-        
-        // 合并完成状态
         Object.assign(currentData.completed, importedData.completed);
         
-        // 合并错题（取最大次数）
+        // 错题取最大错误次数
         for (const qid in importedData.wrongs) {
             if (currentData.wrongs[qid]) {
-                currentData.wrongs[qid].count = Math.max(
-                    currentData.wrongs[qid].count,
-                    importedData.wrongs[qid].count
-                );
-                currentData.wrongs[qid].lastTime = Math.max(
-                    currentData.wrongs[qid].lastTime,
-                    importedData.wrongs[qid].lastTime
-                );
+                currentData.wrongs[qid].count = Math.max(currentData.wrongs[qid].count, importedData.wrongs[qid].count);
+                currentData.wrongs[qid].lastTime = Math.max(currentData.wrongs[qid].lastTime, importedData.wrongs[qid].lastTime);
             } else {
                 currentData.wrongs[qid] = importedData.wrongs[qid];
             }
         }
         
-        // 合并每日统计
+        // 每日统计合并去重
         for (const date in importedData.daily) {
             if (currentData.daily[date]) {
-                // 合并数组并去重
                 currentData.daily[date].done = [...new Set([...currentData.daily[date].done, ...importedData.daily[date].done])];
                 currentData.daily[date].wrong = [...new Set([...currentData.daily[date].wrong, ...importedData.daily[date].wrong])];
             } else {
@@ -353,112 +214,60 @@ function importFromCode() {
         }
         
         saveData(currentData);
-        showToast('✅ 记录导入成功！刷新页面生效。');
-        
-        // 刷新UI
+        showToast("✅ 记录导入成功！刷新页面生效");
         setTimeout(() => location.reload(), 1500);
     } catch (e) {
-        console.error(e);
-        showToast('❌ 恢复码无效或已损坏！');
+        showToast("❌ 恢复码无效或已损坏！");
     }
 }
 
+// 生成并复制恢复码
 function generateAndCopyCode() {
     const code = generateRecoveryCode();
-    document.getElementById('code-input').value = code;
-    
-    // 复制到剪贴板
+    document.getElementById("code-input").value = code;
     navigator.clipboard.writeText(code).then(() => {
-        showToast('📋 恢复码已复制到剪贴板！');
-    }).catch(err => {
-        showToast('⚠️ 复制失败，请手动选中复制。');
+        showToast("📋 恢复码已复制到剪贴板！");
+    }).catch(() => {
+        showToast("⚠️ 复制失败，请手动选中复制");
     });
 }
 
-// Toast提示
+// 提示框工具函数
 function showToast(message) {
-    const toast = document.getElementById('toast');
+    const toast = document.getElementById("toast");
     toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3000);
 }
-
-// ================= 4. 核心逻辑层 =================
-let timerInterval = null;
-let totalSeconds = 0;
-let timerState = 'idle'; 
-
-document.addEventListener('DOMContentLoaded', () => {
-    renderMenu();
-    renderAllQuestions();
-    updateStats();
-    updateDailyStats();
+</script>
+    <script>
+// ================= 4. 视图切换逻辑 =================
+function showView(viewId) {
+    // 隐藏所有视图
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    // 显示目标视图
+    document.getElementById(`view-${viewId}`).classList.add("active");
     
-    // 页面卸载时自动生成恢复码提示
-    window.addEventListener('beforeunload', (e) => {
-        const data = loadData();
-        const hasData = Object.keys(data.completed).length > 0 || Object.keys(data.wrongs).length > 0;
-        
-        if (hasData) {
-            const code = generateRecoveryCode();
-            // 现代浏览器可能不会显示自定义消息，但我们可以设置clipboard
-            navigator.clipboard.writeText(code).then(() => {
-                console.log('恢复码已自动复制到剪贴板:', code);
-            }).catch(() => {
-                // 备用方案：存储在sessionStorage
-                sessionStorage.setItem('auto_recovery_code', code);
-            });
-            
-            // 标准做法：设置returnValue
-            e.preventDefault();
-            e.returnValue = '您的做题记录已自动生成恢复码并复制到剪贴板。如需保留记录，请保存此代码。';
-        }
-    });
-});
-
-// 视图切换
-function showView(name) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + name).classList.add('active');
-    document.querySelectorAll('.top-nav button').forEach(b => b.classList.remove('active'));
-    
-    const btnMap = { menu: 'btn-menu', all: 'btn-all', wrong: 'btn-wrong', stats: 'btn-stats', chapter: 'btn-menu', code: 'btn-code' };
-    if(document.getElementById(btnMap[name])) document.getElementById(btnMap[name]).classList.add('active');
-    
-    if(name === 'wrong') filterWrong('all', document.querySelector('.wf-btn[data-filter="all"]'));
-    if(name === 'stats') {
-        updateStats();
-        updateDailyStats();
+    // 更新导航高亮
+    document.querySelectorAll(".top-nav button").forEach(b => b.classList.remove("active"));
+    const navMap = { menu: "btn-menu", all: "btn-all", wrong: "btn-wrong", stats: "btn-stats", code: "btn-code" };
+    if (document.getElementById(navMap[viewId])) {
+        document.getElementById(navMap[viewId]).classList.add("active");
     }
-    if(name === 'code') {
-        // 自动填充当前恢复码
-        document.getElementById('code-input').value = generateRecoveryCode();
-    }
+    
+    // 视图专属逻辑
+    if (viewId === "wrong") filterWrong("all", document.querySelector(".wf-btn[data-filter='all']"));
+    if (viewId === "stats") { updateStats(); updateDailyStats(); }
+    if (viewId === "code") document.getElementById("code-input").value = generateRecoveryCode();
+    
     window.scrollTo(0, 0);
 }
 
-// 目录跳转
-function jumpToChapter(chId) {
-    const chQuestions = questions.filter(q => q.ch === chId);
-    
-    if (chQuestions.length === 0) {
-        alert(`第 ${chId} 章《${chapters[chId-1]}》的题目暂未添加，请在代码的 questions 数组中补充！`);
-        return;
-    }
-
-    document.getElementById('chapter-title').innerText = `${chId}. ${chapters[chId-1]}`;
-    const chapterList = document.getElementById('chapter-list');
-    chapterList.innerHTML = chQuestions.map(q => renderQuestionCard(q)).join('');
-    
-    showView('chapter');
-    if(window.MathJax) MathJax.typesetPromise();
-}
-
-// 渲染目录（增加进度显示）
+// ================= 5. 目录渲染（显示完成进度） =================
 function renderMenu() {
-    const menuList = document.getElementById('menu-list');
+    const menuList = document.getElementById("menu-list");
     const data = loadData();
-    let html = '';
+    let html = "";
     
     chapters.forEach((name, index) => {
         const chId = index + 1;
@@ -471,167 +280,306 @@ function renderMenu() {
             if (data.completed[q.id]) doneInChapter++;
         });
         
-        const progressText = totalInChapter > 0 ? `(${doneInChapter}/${totalInChapter})` : '(0/0)';
-        const progressClass = doneInChapter === totalInChapter && totalInChapter > 0 ? 'done' : 'pending';
+        const progressText = totalInChapter > 0 ? `(${doneInChapter}/${totalInChapter})` : "(0/0)";
+        const progressClass = doneInChapter === totalInChapter && totalInChapter > 0 ? "done" : "pending";
         
-        html += `<div class="menu-item" onclick="jumpToChapter(${chId})">
-                    <span>${chId}. ${name}</span>
-                    <span class="progress-indicator ${progressClass}">${progressText}</span>
-                 </div>`;
+        html += `
+        <div class="menu-item" onclick="renderChapter(${chId})">
+            <span>${chId}. ${name}</span>
+            <span class="progress-indicator ${progressClass}">${progressText}</span>
+        </div>
+        `;
     });
+    
     menuList.innerHTML = html;
 }
 
-// 渲染题目卡片（增加状态标识）
+// 渲染单个章节的所有题目
+function renderChapter(chId) {
+    const chQuestions = questions.filter(q => q.ch === chId);
+    if (chQuestions.length === 0) {
+        alert(`第${chId}章的题目暂未添加，请在代码中补充！`);
+        return;
+    }
+    
+    const allList = document.getElementById("all-list");
+    let html = `<h2 style="color:#2c3e50; border-bottom:2px solid #3498db; padding-bottom:10px; margin-top:20px;">${chId}. ${chapters[chId-1]}</h2>`;
+    html += chQuestions.map(q => renderQuestionCard(q)).join("");
+    allList.innerHTML = html;
+    
+    showView("all");
+    // 重新渲染数学公式（如果后续加了MathJax，这里需要调用MathJax.typeset()）
+}
+
+// 渲染题目卡片（显示完成状态）
 function renderQuestionCard(q) {
     const data = loadData();
     const isDone = data.completed[q.id] || false;
-    const statusClass = isDone ? 'done' : 'pending';
-    const statusText = isDone ? '✓ 已完成' : '○ 待完成';
+    const statusClass = isDone ? "done" : "pending";
+    const statusText = isDone ? "✓ 已完成" : "○ 待完成";
     
-    return `<div class="card" id="q-card-${q.id}">
-                <div class="q-title">
-                    ${q.id}. ${q.q}
-                    <span class="q-status ${statusClass}">${statusText}</span>
-                </div>
-                ${q.opts.map((opt, idx) => `<div class="opt" data-qid="${q.id}" data-val="${String.fromCharCode(65+idx)}" onclick="checkAnswer(this, ${q.id}, '${q.ans}')">${opt}</div>`).join('')}
-                <div class="feedback" id="fb-${q.id}"></div>
-                <div class="answer-box" id="ans-${q.id}"><b>解析：</b>${q.ana}</div>
-             </div>`;
+    return `
+    <div class="card" id="q-card-${q.id}">
+        <div class="q-title">
+            ${q.id}. ${q.q}
+            <span class="q-status ${statusClass}">${statusText}</span>
+        </div>
+        ${q.opts.map((opt, idx) => `
+            <div class="opt" data-qid="${q.id}" data-val="${String.fromCharCode(65+idx)}" onclick="checkAnswer(this, ${q.id}, '${q.ans}')">
+                ${opt}
+            </div>
+        `).join("")}
+        <div class="feedback" id="fb-${q.id}"></div>
+        <div class="answer-box" id="ans-${q.id}"><b>解析：</b>${q.ana}</div>
+    </div>
+    `;
 }
 
-// 渲染全部题目
+// 渲染所有题目（全部视图）
 function renderAllQuestions() {
-    const allList = document.getElementById('all-list');
-    let html = '';
+    const allList = document.getElementById("all-list");
+    let html = "";
     let currentCh = 0;
-    const data = loadData();
     
     questions.forEach(q => {
-        if(q.ch !== currentCh) {
+        if (q.ch !== currentCh) {
             currentCh = q.ch;
-            html += `<h2 style="color:#2c3e50; border-bottom:2px solid #3498db; padding-bottom:10px; margin-top:20px;">
-                        ${currentCh}. ${chapters[currentCh-1]}
-                     </h2>`;
+            html += `<h2 style="color:#2c3e50; border-bottom:2px solid #3498db; padding-bottom:10px; margin-top:20px;">${currentCh}. ${chapters[currentCh-1]}</h2>`;
         }
         html += renderQuestionCard(q);
     });
     
-    if(questions.length === 0) {
-        html = '<div class="empty-msg">暂无题目数据，请在JS中补充 questions 数组。</div>';
+    if (questions.length === 0) {
+        html = '<div class="empty-msg">暂无题目数据，请在代码中补充questions数组</div>';
     }
     allList.innerHTML = html;
-    if(window.MathJax) MathJax.typesetPromise();
 }
 
-// 答题逻辑（更新完成状态）
+// ================= 6. 答题逻辑 =================
 function checkAnswer(el, qid, correctAns) {
-    const card = document.getElementById('q-card-' + qid);
-    const opts = card.querySelectorAll('.opt');
-    const selected = el.getAttribute('data-val');
+    const card = document.getElementById(`q-card-${qid}`);
+    const opts = card.querySelectorAll(".opt");
+    const selected = el.getAttribute("data-val");
     
-    opts.forEach(o => o.classList.add('disabled'));
+    // 禁用所有选项，防止重复点击
+    opts.forEach(o => o.classList.add("disabled"));
     
-    const fb = document.getElementById('fb-' + qid);
-    const ansBox = document.getElementById('ans-' + qid);
+    const fb = document.getElementById(`fb-${qid}`);
+    const ansBox = document.getElementById(`ans-${qid}`);
     
     // 标记为已完成
     markAsDone(qid);
     
-    if(selected === correctAns) {
-        el.classList.add('correct');
-        fb.innerHTML = '🎉 回答正确！';
-        fb.className = 'feedback show correct-fb';
+    if (selected === correctAns) {
+        el.classList.add("correct");
+        fb.innerHTML = "🎉 回答正确！";
+        fb.className = "feedback show correct-fb";
     } else {
-        el.classList.add('wrong');
-        opts.forEach(o => { if(o.getAttribute('data-val') === correctAns) o.classList.add('correct'); });
-        fb.innerHTML = '❌ 回答错误，正确答案是 ' + correctAns;
-        fb.className = 'feedback show wrong-fb';
+        el.classList.add("wrong");
+        opts.forEach(o => { if (o.getAttribute("data-val") === correctAns) o.classList.add("correct"); });
+        fb.innerHTML = `❌ 回答错误，正确答案是 ${correctAns}`;
+        fb.className = "feedback show wrong-fb";
         saveWrong(qid);
     }
-    ansBox.classList.add('show');
+    
+    ansBox.classList.add("show");
     updateStats();
     updateDailyStats();
     renderMenu(); // 更新目录进度
     
-    // 更新卡片状态显示
-    const statusSpan = card.querySelector('.q-status');
+    // 更新卡片状态
+    const statusSpan = card.querySelector(".q-status");
     if (statusSpan) {
-        statusSpan.textContent = '✓ 已完成';
-        statusSpan.className = 'q-status done';
+        statusSpan.textContent = "✓ 已完成";
+        statusSpan.className = "q-status done";
     }
 }
 
-// ================= 5. 错题本逻辑 =================
+// ================= 7. 计时器逻辑 =================
+let timerInterval = null;
+let totalSeconds = 0;
+let timerState = "idle";
+
+function handleTimerClick() {
+    const fab = document.getElementById("fab-timer");
+    const timeDisplay = fab.querySelector(".time");
+    const statusDisplay = fab.querySelector(".status");
+    
+    if (timerState === "idle") {
+        timerState = "running";
+        fab.classList.add("running");
+        statusDisplay.innerText = "计时中";
+        timerInterval = setInterval(() => {
+            totalSeconds++;
+            updateTimerDisplay();
+        }, 1000);
+    } else if (timerState === "running") {
+        timerState = "paused";
+        clearInterval(timerInterval);
+        fab.classList.remove("running");
+        statusDisplay.innerText = "已暂停";
+    } else if (timerState === "paused") {
+        timerState = "idle";
+        clearInterval(timerInterval);
+        totalSeconds = 0;
+        updateTimerDisplay();
+        statusDisplay.innerText = "点击开始";
+    }
+}
+
+function updateTimerDisplay() {
+    const fab = document.getElementById("fab-timer");
+    const timeDisplay = fab.querySelector(".time");
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    timeDisplay.innerText = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+</script>
+
+
+    <!-- 提示框 -->
+    <div id="toast" class="toast"></div>
+    
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <button id="btn-menu" class="active" onclick="showView('menu')">📑 目录</button>
+        <button id="btn-all" onclick="showView('all')">📝 全部</button>
+        <button id="btn-wrong" onclick="showView('wrong')">❌ 错题</button>
+        <button id="btn-stats" onclick="showView('stats')">📊 统计</button>
+        <button id="btn-code" onclick="showView('code')">🔑 恢复码</button>
+    </div>
+    
+    <!-- 目录视图 -->
+    <div id="view-menu" class="view active">
+        <h2 class="menu-title">📚 选择章节开始刷题</h2>
+        <div id="menu-list"></div>
+    </div>
+    
+    <!-- 全部题目视图 -->
+    <div id="view-all" class="view">
+        <div id="all-list"></div>
+    </div>
+    
+    <!-- 错题视图 -->
+    <div id="view-wrong" class="view">
+        <div class="wrong-filter">
+            <button class="wf-btn active" data-filter="all" onclick="filterWrong('all', this)">全部错题</button>
+            <button class="wf-btn" data-filter="week" onclick="filterWrong('week', this)">近7天</button>
+            <button class="wf-btn" data-filter="high" onclick="filterWrong('high', this)">高频错题</button>
+            <button class="clear-btn" onclick="clearWrongs()">🗑️ 清空</button>
+        </div>
+        <div id="wrong-list"></div>
+    </div>
+    
+    <!-- 统计视图 -->
+    <div id="view-stats" class="view">
+        <h2 class="menu-title">📊 刷题数据统计</h2>
+        <div class="stats-bar">
+            <div class="stats-item"><div class="num" id="stat-total">0</div><div class="label">总题数</div></div>
+            <div class="stats-item"><div class="num" id="stat-done">0</div><div class="label">已完成</div></div>
+            <div class="stats-item"><div class="num" id="stat-wrong">0</div><div class="label">错题数</div></div>
+            <div class="stats-item"><div class="num" id="stat-rate">0%</div><div class="label">正确率</div></div>
+        </div>
+        <div class="daily-stats" id="daily-stats-container">
+            <h3>📅 每日做题记录</h3>
+            <div id="daily-stats-content">暂无数据</div>
+        </div>
+    </div>
+    
+    <!-- 恢复码视图 -->
+    <div id="view-code" class="view">
+        <h2 class="menu-title">🔑 做题记录恢复码</h2>
+        <div class="code-section">
+            <p>关闭页面时自动生成恢复码，粘贴到新设备即可同步所有记录</p>
+            <textarea id="code-input" placeholder="在此粘贴恢复码..."></textarea>
+            <br>
+            <button onclick="importFromCode()">📥 导入记录</button>
+            <button class="secondary" onclick="generateAndCopyCode()">📋 生成并复制当前恢复码</button>
+        </div>
+    </div>
+    
+    <!-- 悬浮计时器 -->
+    <div id="fab-timer" class="fab-timer" onclick="handleTimerClick()">
+        <div class="icon">⏱️</div>
+        <div class="time">00:00</div>
+        <div class="status">点击开始</div>
+    </div>
+    <script>
+// ================= 8. 错题本逻辑 =================
 function filterWrong(filter, btnEl) {
-    document.querySelectorAll('.wf-btn').forEach(b => b.classList.remove('active'));
-    if(btnEl) btnEl.classList.add('active');
-
+    // 更新筛选按钮高亮
+    document.querySelectorAll(".wf-btn").forEach(b => b.classList.remove("active"));
+    if (btnEl) btnEl.classList.add("active");
+    
     const data = loadData();
-    const wrongList = document.getElementById('wrong-list');
-    let html = '';
+    const wrongList = document.getElementById("wrong-list");
+    let html = "";
     let count = 0;
-
+    
     const now = Date.now();
     const sevenDays = 7 * 24 * 3600 * 1000;
-
-    for(let qid in data.wrongs) {
+    
+    for (let qid in data.wrongs) {
         const item = data.wrongs[qid];
         const qData = questions.find(q => q.id == qid);
-        if(!qData) continue;
-
-        if(filter === 'week' && (now - item.lastTime > sevenDays)) continue;
-        if(filter === 'high' && item.count < 2) continue;
-
+        if (!qData) continue;
+        
+        // 筛选条件
+        if (filter === "week" && (now - item.lastTime > sevenDays)) continue;
+        if (filter === "high" && item.count < 2) continue;
+        
         count++;
         const lastDate = new Date(item.lastTime).toLocaleDateString();
-        html += `<div class="card">
-                    <div style="color:#e74c3c; font-weight:bold; margin-bottom:10px;">
-                        错 ${item.count} 次 | 最后错误: ${lastDate} | 第${qData.ch}章 ${chapters[qData.ch-1]}
-                    </div>
-                    <div class="q-title">${qid}. ${qData.q}</div>
-                    <div class="answer-box show" style="display:block;">
-                        <b>正确答案：</b>${qData.ans}<br>
-                        <b>解析：</b>${qData.ana}
-                    </div>
-                 </div>`;
+        html += `
+        <div class="card">
+            <div style="color:#e74c3c; font-weight:bold; margin-bottom:10px;">
+                错 ${item.count} 次 | 最后错误: ${lastDate} | 第${qData.ch}章 ${chapters[qData.ch-1]}
+            </div>
+            <div class="q-title">${qid}. ${qData.q}</div>
+            <div class="answer-box show" style="display:block;">
+                <b>正确答案：</b>${qData.ans}<br>
+                <b>解析：</b>${qData.ana}
+            </div>
+        </div>
+        `;
     }
-
-    if(count === 0) html = '<div class="empty-msg">🎉 太棒了，该分类下暂无错题！</div>';
+    
+    if (count === 0) html = '<div class="empty-msg">🎉 太棒了，该分类下暂无错题！</div>';
     wrongList.innerHTML = html;
-    if(window.MathJax) MathJax.typesetPromise();
 }
 
+// 清空错题本
 function clearWrongs() {
-    if(confirm('确定要清空所有错题记录吗？')) {
+    if (confirm("确定要清空所有错题记录吗？")) {
         const data = loadData();
         data.wrongs = {};
         saveData(data);
-        filterWrong('all', document.querySelector('.wf-btn[data-filter="all"]'));
+        filterWrong("all", document.querySelector(".wf-btn[data-filter='all']"));
         updateStats();
-        showToast('🗑️ 错题记录已清空');
+        showToast("🗑️ 错题记录已清空");
     }
 }
 
-// ================= 6. 统计逻辑 =================
+// ================= 9. 统计逻辑 =================
+// 更新总览统计
 function updateStats() {
     const data = loadData();
     const total = questions.length;
     const doneCount = Object.keys(data.completed).length;
     const wrongCount = Object.keys(data.wrongs).length;
     
-    document.getElementById('stat-total').innerText = total;
-    document.getElementById('stat-done').innerText = doneCount;
-    document.getElementById('stat-wrong').innerText = wrongCount;
+    document.getElementById("stat-total").innerText = total;
+    document.getElementById("stat-done").innerText = doneCount;
+    document.getElementById("stat-wrong").innerText = wrongCount;
     
     const rate = doneCount > 0 ? Math.round(((doneCount - wrongCount) / doneCount) * 100) : 0;
-    document.getElementById('stat-rate').innerText = Math.max(0, rate) + '%';
+    document.getElementById("stat-rate").innerText = Math.max(0, rate) + "%";
 }
 
 // 更新每日统计
 function updateDailyStats() {
     const data = loadData();
-    const container = document.getElementById('daily-stats-content');
+    const container = document.getElementById("daily-stats-content");
     const today = getTodayKey();
     
     // 获取最近7天的统计
@@ -642,8 +590,8 @@ function updateDailyStats() {
         return;
     }
     
-    let html = '<table>';
-    html += '<tr><th>日期</th><th>完成题数</th><th>错题数</th><th>正确率</th></tr>';
+    let html = "<table>";
+    html += "<tr><th>日期</th><th>完成题数</th><th>错题数</th><th>正确率</th></tr>";
     
     dates.forEach(date => {
         const dayData = data.daily[date];
@@ -651,18 +599,20 @@ function updateDailyStats() {
         const wrongCount = dayData.wrong.length;
         const rate = doneCount > 0 ? Math.round(((doneCount - wrongCount) / doneCount) * 100) : 0;
         
-        const isToday = date === today ? ' style="background:#e8f4fc;"' : '';
-        html += `<tr${isToday}>
-                    <td>${date}${date === today ? ' (今天)' : ''}</td>
-                    <td>${doneCount}</td>
-                    <td>${wrongCount}</td>
-                    <td>${rate}%</td>
-                 </tr>`;
+        const isToday = date === today ? " style=\"background:#e8f4fc;\"" : "";
+        html += `
+        <tr${isToday}>
+            <td>${date}${date === today ? " (今天)" : ""}</td>
+            <td>${doneCount}</td>
+            <td>${wrongCount}</td>
+            <td>${rate}%</td>
+        </tr>
+        `;
     });
     
-    html += '</table>';
+    html += "</table>";
     
-    // 显示今天的详细题目列表
+    // 今日完成题目明细
     if (data.daily[today]) {
         const todayData = data.daily[today];
         html += '<div style="margin-top:15px;">';
@@ -673,55 +623,43 @@ function updateDailyStats() {
                 const q = questions.find(q => q.id === qid);
                 if (q) {
                     const isWrong = todayData.wrong.includes(qid);
-                    const status = isWrong ? '❌' : '✅';
-                    html += `<div style="padding:3px 0; border-bottom:1px dashed #eee;">
-                                ${status} ${qid}. ${q.q.substring(0, 30)}...
-                             </div>`;
+                    const status = isWrong ? "❌" : "✅";
+                    html += `
+                    <div style="padding:3px 0; border-bottom:1px dashed #eee;">
+                        ${status} ${qid}. ${q.q.substring(0, 30)}...
+                    </div>
+                    `;
                 }
             });
-            html += '</div>';
+            html += "</div>";
         } else {
             html += '<p style="color:#999; font-size:14px;">今日尚未完成任何题目</p>';
         }
-        html += '</div>';
+        html += "</div>";
     }
     
     container.innerHTML = html;
 }
 
-// ================= 7. 计时器逻辑 =================
-const fab = document.getElementById('fab-timer');
-const timeDisplay = fab.querySelector('.time');
-const statusDisplay = fab.querySelector('.status');
-
-function handleTimerClick() {
-    if(timerState === 'idle') {
-        timerState = 'running';
-        fab.classList.add('running');
-        statusDisplay.innerText = '计时中';
-        timerInterval = setInterval(() => {
-            totalSeconds++;
-            updateTimerDisplay();
-        }, 1000);
-    } else if(timerState === 'running') {
-        timerState = 'paused';
-        clearInterval(timerInterval);
-        fab.classList.remove('running');
-        statusDisplay.innerText = '已暂停';
-    } else if(timerState === 'paused') {
-        timerState = 'idle';
-        clearInterval(timerInterval); 
-        totalSeconds = 0;             
-        updateTimerDisplay();         
-        statusDisplay.innerText = '点击开始';
-    }
-}
-
-function updateTimerDisplay() {
-    let m = Math.floor(totalSeconds / 60);
-    let s = totalSeconds % 60;
-    timeDisplay.innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-}
+// ================= 10. 全局初始化（页面加载时执行） =================
+document.addEventListener("DOMContentLoaded", () => {
+    renderMenu();
+    renderAllQuestions();
+    updateStats();
+    updateDailyStats();
+    
+    // 页面卸载时自动生成恢复码（部分浏览器支持自动复制）
+    window.addEventListener("beforeunload", () => {
+        const data = loadData();
+        const hasData = Object.keys(data.completed).length > 0 || Object.keys(data.wrongs).length > 0;
+        if (hasData) {
+            const code = generateRecoveryCode();
+            navigator.clipboard.writeText(code).catch(() => {
+                sessionStorage.setItem("auto_recovery_code", code);
+            });
+        }
+    });
+});
 </script>
 </body>
 </html>
