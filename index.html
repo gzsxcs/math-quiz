@@ -725,22 +725,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 </script>
-<!-- MathJax延迟加载：等页面加载完再渲染公式，绝对不卡交互 -->
-<script>
-// 先定义MathJax配置，禁止自动扫描全页
-window.MathJax = {
-  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, // 支持$公式$写法
-  startup: { typeset: false } // 关键：不自动渲染，等我们手动触发
-};
-// 异步加载MathJax，不阻塞页面
-const mathJaxScript = document.createElement('script');
-mathJaxScript.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'; // 国内加速CDN
-mathJaxScript.async = true;
-// 加载完成后，只渲染题目和解析里的公式（其他地方不碰，避免卡顿）
-mathJaxScript.onload = () => {
-  MathJax.typeset(['.q-title', '.answer-box']); // 只扫题目和解析区域
-};
-document.body.appendChild(mathJaxScript);
-</script>
 </body>
 </html>
