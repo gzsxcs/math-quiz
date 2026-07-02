@@ -401,6 +401,11 @@ function showView(viewId) {
     if (viewId === "code") document.getElementById("code-input").value = generateRecoveryCode();
     
     window.scrollTo(0, 0);
+    
+    // ★★★ 新增：切换视图后重新渲染公式 ★★★
+    if (typeof MathJax !== 'undefined' && MathJax.typeset) {
+        MathJax.typeset();
+    }
 }
 
 // ================= 5. 目录渲染（显示完成进度） =================
